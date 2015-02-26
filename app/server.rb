@@ -10,6 +10,7 @@ require_relative 'data_mapper_setup'
 enable :sessions
 set :session_secret, 'super secret'
 use Rack::Flash
+use Rack::MethodOverride
 
 get '/' do
   @links = Link.all
@@ -66,4 +67,8 @@ post '/sessions' do
     erb :"sessions/new"
   end
 end
+
+  delete '/sessions' do
+    flash.now[:notice] = "Good bye!"
+  end
 
