@@ -2,19 +2,10 @@ require 'sinatra'
 require 'data_mapper'
 require './helpers'
 require 'rack-flash'
-
-
-env = ENV['RACK_ENV'] || 'development'
-
-DataMapper.setup(:default, "postgres://localhost/bookmark_manager_#{env}")
-
 require './app/lib/link'
 require './app/lib/tag'
 require './app/lib/user'
-
-
-DataMapper.finalize
-DataMapper.auto_upgrade!
+require_relative 'data_mapper_setup'
 
 enable :sessions
 set :session_secret, 'super secret'
@@ -58,5 +49,21 @@ end
 get '/users/new' do
   @user = User.new
   erb :"users/new"
+end
+
+get '/sessions/new' do
+  erb :"sessions/new"
+end
+
+post '/sessions' do
+  email, password = params[:email], params[:password]
+  user = User.authenticate(email, password)
+  if user
+    session[:user_id] = user.id
+    redirect to('/')
+  else
+    flash[:errors] = ["The email or password is incorrect"]
+    erb :"sessions/new"
+  end
 end
 
