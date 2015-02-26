@@ -68,7 +68,8 @@ post '/sessions' do
   end
 end
 
-  delete '/sessions' do
-    flash.now[:notice] = "Good bye!"
-  end
+delete '/sessions' do
+  session.clear
+  flash.now[:notice] = "Good bye!"
+end
 
